@@ -21,9 +21,40 @@ PGSTrackName = 'Full (PGS)'
 SRTForcedTrackName = 'Forced (SRT)'
 SRTTrackName = 'Full (SRT)'
 
-# get show name and season
+# input information
 showName = input('Show name: ')
 season = input('Season number: ')
+includePGS = input('Include PGS (y/n): ')
+includeSRT = input('Include SRT (y/n): ')
+
+# determine season input type
+if season.find('-') != -1:
+    season = range(int(season[:season.find('-')]), int(season[season.find('-') + 1:]) + 1)
+else:
+    season = season.split(',')
+
+# include PGS subtitles
+if includePGS == 'y':
+    includePGS = True
+else:
+    includePGS = False
+
+# include SRT subtitles
+if includeSRT == 'y':
+    includeSRT = True
+else:
+    includeSRT = False
+
+# rename episodes
+if(input('Rename Episodes (y/n): ') == 'y'):
+    for sNum in season:
+        seasonInputPath = inputPath + '/' + showName + '/Season ' + str(sNum)
+        for eNum in range(1, len(os.listdir(seasonInputPath)) + 1):
+            episodeName = showName + ' S' + "{0:0=2d}".format(int(sNum)) + 'E' + "{0:0=2d}".format(int(eNum))
+            sourcePath = seasonInputPath + '/' + os.listdir(seasonInputPath)[eNum - 1]
+            destinationPath = seasonInputPath + '/' + episodeName + '.mkv'
+            os.rename(sourcePath, destinationPath)
+
 
 # show tracks for all episodes
 if input('Show tracks: (y/n): ') == 'y':
@@ -36,26 +67,6 @@ if input('Show tracks: (y/n): ') == 'y':
                 subprocess.run('"' + MKVMergePath + '" --identify "' + fileInputPath + '"')
         except FileNotFoundError:
             print('FILES NOT FOUND')
-
-# include PGS subtitles
-includePGS = input('Include PGS (y/n): ')
-if includePGS == 'y':
-    includePGS = True
-else:
-    includePGS = False
-
-# include SRT subtitles
-includeSRT = input('Include SRT (y/n): ')
-if includeSRT == 'y':
-    includeSRT = True
-else:
-    includeSRT = False
-
-# determine input type
-if season.find('-') != -1:
-    season = range(int(season[:season.find('-')]), int(season[season.find('-') + 1:]) + 1)
-else:
-    season = season.split(',')
 
 # output seasons to be remuxed
 print('\nRemuxing ' + showName)
