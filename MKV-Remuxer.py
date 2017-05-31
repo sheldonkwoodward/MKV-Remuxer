@@ -61,10 +61,14 @@ print('\n== Season List ==')
 for s in season:
     print(' ' + showName + ' Season ' + str(s))
 
+# create show path
+if not os.path.exists(outputPath + '/' + showName):
+    os.makedirs(outputPath + '/' + showName)
+
 # show and write streams for all episodes
 print('\n== Episode List ==')
-with open(trackInfoPath + '/' + showName + ' Season ' + str(sNum) + '.txt', 'w') as out:
-    for sNum in season:
+for sNum in season:
+    with open(trackInfoPath + '/' + showName + '/' + showName + ' Season ' + str(sNum) + '.txt', 'w') as out:
         try:
             seasonInputPath = inputPath + '/' + showName + '/Season ' + str(sNum)
             for episode in os.listdir(seasonInputPath):
