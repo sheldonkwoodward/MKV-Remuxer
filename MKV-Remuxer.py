@@ -11,6 +11,7 @@ MKVPropeditPath = 'C:/Program Files/MKVToolNix/mkvpropedit.exe'
 inputPath = 'E:/My Media/Re-encoding/2 - Encoded'
 outputPath = 'E:/My Media/Re-encoding/3 - Remuxed'
 subtitlePath = 'E:/My Media/Re-encoding/Subtitles'
+trackInfoPath = 'E:/My Media/Re-encoding/3 - Remuxed'
 
 # track names
 videoTrackName = ""
@@ -46,7 +47,7 @@ else:
     includeSRT = False
 
 # rename episodes
-if(input('Rename Episodes (y/n): ') == 'y'):
+if input('Rename Episodes (y/n): ') == 'y':
     for sNum in season:
         seasonInputPath = inputPath + '/' + showName + '/Season ' + str(sNum)
         for eNum in range(1, len(os.listdir(seasonInputPath)) + 1):
@@ -55,23 +56,23 @@ if(input('Rename Episodes (y/n): ') == 'y'):
             destinationPath = seasonInputPath + '/' + episodeName + '.mkv'
             os.rename(sourcePath, destinationPath)
 
+# output seasons to be remuxed
+print('\n== Season List ==')
+for s in season:
+    print(' ' + showName + ' Season ' + str(s))
 
-# show tracks for all episodes
-if input('Show tracks: (y/n): ') == 'y':
+# show and write streams for all episodes
+print('\n== Episode List ==')
+with open(trackInfoPath + '/' + showName + ' Season ' + str(sNum) + '.txt', 'w') as out:
     for sNum in season:
         try:
             seasonInputPath = inputPath + '/' + showName + '/Season ' + str(sNum)
             for episode in os.listdir(seasonInputPath):
-                print('\n== ' + episode[:-4] + ' ==')
+                print(' ' + episode[:-4])
                 fileInputPath = seasonInputPath + '/' + episode
-                subprocess.run('"' + MKVMergePath + '" --identify "' + fileInputPath + '"')
+                subprocess.run('"' + MKVMergePath + '" --identify "' + fileInputPath + '"', stdout = out)
         except FileNotFoundError:
             print('FILES NOT FOUND')
-
-# output seasons to be remuxed
-print('\nRemuxing ' + showName)
-for s in season:
-    print(' Season ' + str(s))
 
 # remux seasons
 for sNum in season:
@@ -87,7 +88,7 @@ for sNum in season:
 
     # modify all episodes
     for episode in os.listdir(seasonInputPath):
-        print('\n\n== Remuxing ' + episode[:-4] + ' ==\n')
+        print('\n== Remuxing ' + episode[:-4] + ' ==')
 
         # set paths for specific episode
         fileInputPath = seasonInputPath + '/' + episode
